@@ -1,0 +1,42 @@
+@font-face {
+  font-style: normal;
+  font-family: JetBrains-Mono;
+  font-display: swap;
+  src: url(/font/JetBrainsMono-1.0.3/web/eot/JetBrainsMono-Regular.eot?);
+  src: url(/font/JetBrainsMono-1.0.3/web/eot/JetBrainsMono-Regular.eot?#iefix) format('embedded-opentype'),
+  url(/font/JetBrainsMono-1.0.3/web/woff/JetBrainsMono-Regular.woff) format('woff'),
+  url(/font/JetBrainsMono-1.0.3/web/woff2/JetBrainsMono-Regular.woff2) format('woff2'),
+  url(/font/JetBrainsMono-1.0.3/ttf/JetBrainsMono-Regular.ttf)  format('truetype');
+}
+html {font-size: 67.5%;}
+
+body {
+  height: 100%;
+  font-family: JetBrains-Mono, Helvetica, Tahoma, Arial, STXihei, “华文细黑”, “Microsoft YaHei”, “微软雅黑”, sans-serif;
+  line-height: 1.725;
+  background-color: #1d1f21;
+  color: #c9cacc;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+* {
+  color: #444;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  letter-spacing: .15rem;
+}
+
+h1 {
+  color: #c9cacc;
+  font-size: 1.5rem;
+}
+
+a {
+  color: #eee;
+}
+
+p {
+  color: #c9cacc;
+}
