@@ -2,6 +2,7 @@ import React from 'react';
 import {Switch, Route} from 'react-router-dom'
 
 import Layout from "../layout";
+import NoPage from "../pages/no-page";
 
 const Home = React.lazy(() => import('../pages/home'))
 const Post = React.lazy(() => import('../pages/post'))
@@ -14,14 +15,17 @@ const DiaRouter = () => {
         <Switch>
             <Route path="/">
                 <Layout>
-                    <Route exact path="/" component={Home}/>
-                    <Route exact path="/home/:page" component={Home}/>
-                    <Route exact path="/:category/:slug/:page" component={Home}/>
-                    <Route exact path="/links" component={Links}/>
-                    <Route exact path="/post/:id" component={Post}/>
-                    <Route exact path="/sheet/:slug" component={Sheet}/>
-                    <Route exact path="/search/" component={Search} />
-                    <Route exact path="/search/:keyword" component={Search} />
+                    <Switch>
+                        <Route exact path="/" component={Home}/>
+                        <Route exact path="/home/:page" component={Home}/>
+                        <Route exact path="/:category/:slug/:page" component={Home}/>
+                        <Route exact path="/links" component={Links}/>
+                        <Route exact path="/post/:id" component={Post}/>
+                        <Route exact path="/sheet/:slug" component={Sheet}/>
+                        <Route exact path="/search/" component={Search}/>
+                        <Route exact path="/search/:keyword" component={Search}/>
+                        <Route component={NoPage}/>
+                    </Switch>
                 </Layout>
             </Route>
         </Switch>

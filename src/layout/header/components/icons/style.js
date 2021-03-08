@@ -10,6 +10,9 @@ export const HeaderIconsWrapper = styled.div`
         width: 1.8rem;
         height: 1.8rem;
       }
+      div {
+        cursor: pointer;
+      }
     }
   }
   

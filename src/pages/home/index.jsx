@@ -1,44 +1,50 @@
 import React, {memo} from 'react';
-
-import {HomeWrapper} from "./style";
-
 import {getPostList} from "../../api/post";
 import {getCategoryChildrenPosts} from "../../api/categorie";
 
+import {HomeWrapper} from "./style";
+
 import Meta from "../../components/meta";
-import Category from "./components/category";
-import Article from "../../components/post"
+import Loading from "../../components/loading";
+const PageHelper = React.lazy(() => import('../../components/pagehelper'))
+const Article = React.lazy(() => import('../../components/post'))
+const Category = React.lazy(() => import('./components/category'))
 
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            params: {},
+            params: {
+                page: 0
+            },
             post: {
                 content: [],
-                hasContent: true,
-                hasNext: false,
-                hasPrevious: false,
-                isEmpty: false,
-                isFirst: true,
-                isLast: true,
-                page: 0,
-                pages: 1,
-                rpp: 10,
-                total: 1
+                hasContent: false,   // 是否有内容
+                hasNext: false,     // 是否有下一页
+                hasPrevious: false, // 是否有上一页
+                isEmpty: false,     // 是否为空
+                isFirst: false,      // 是否为首页
+                isLast: false,       // 是否为最后一页
+                page: 0,            // 当前页
+                pages: 1,           // 页总数
+                rpp: 10,            // 每页10条
+                total: 0            // 一条数据
             },
             category: []
         }
     }
 
     componentDidMount() {
-        const slug = this.props.match.params.slug;
-        this.getPostList(slug);
+        const {slug, page} = this.props.match.params;
+        this.setState({params: {page: page}}, () => {
+            this.getPostList(slug);
+            // setTimeout(() => this.getPostList(slug), 20000)
+
+        })
     }
 
     componentWillReceiveProps(newProps) {
-        console.log(newProps)
         const slug = newProps.match.params.slug;
         this.getPostList(slug);
     }
@@ -50,9 +56,8 @@ class Home extends React.Component {
     }
 
     getPostList = (slug) => {
-        console.log('home: ',slug)
         if (!slug) {
-            getPostList({}).then(res => {
+            getPostList(this.state.params).then(res => {
                 this.setState({post: res})
             })
         } else {
@@ -62,7 +67,7 @@ class Home extends React.Component {
 
     getPostByCategory = (slug) => {
         if (slug) {
-            getCategoryChildrenPosts(slug).then(res => {
+            getCategoryChildrenPosts(slug, this.state.params).then(res => {
                 this.setState({post: res})
             });
         }
@@ -75,14 +80,20 @@ class Home extends React.Component {
         return (
             <HomeWrapper>
                 <Meta title={config.meta.title}/>
-
-                <Category {...this.props} page={page} handler={this.getPostByCategory}/>
-
                 {
-                    this.state.post.content.map(post => (
-                        <Article key={post.id} post={post}/>
-                    ))
+                    this.state.category && <Category {...this.props} page={page} handler={this.getPostByCategory}/>
                 }
+                <Loading data={this.state.post}>
+                    {
+                        this.state.post.content.map(post => (
+                            <Article key={post.id} post={post}/>
+                        ))
+                    }
+                    {
+                        this.state.post.hasContent && <PageHelper data={this.state.post} />
+                    }
+                </Loading>
+
             </HomeWrapper>
         )
     }

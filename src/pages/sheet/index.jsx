@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import {getSheet} from "../../api/sheet";
 import {SheetWrapper} from "./style";
-import TransFromMarkDown from "../../components/markdown";
+import {PostWrapper} from "../post/style";
+
+const TransFromMarkDown = React.lazy(() => import('../../components/markdown'))
+const Comments = React.lazy(() => import('../../components/comment'))
 
 class Sheet extends Component {
 
@@ -32,8 +35,12 @@ class Sheet extends Component {
         return (
             <SheetWrapper>
                 <h1>{this.state.title}</h1>
-                <TransFromMarkDown content={this.state.originalContent}>
-                </TransFromMarkDown>
+                {
+                    this.state.id && <TransFromMarkDown content={this.state.originalContent} />
+                }
+                {
+                    this.state.id && <Comments id={this.state.id} type='sheet'/>
+                }
             </SheetWrapper>
         );
     }

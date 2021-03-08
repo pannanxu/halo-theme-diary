@@ -1,7 +1,11 @@
 import React, {Component} from 'react';
 
-import Article from '../../components/post'
 import {searchPost} from "../../api/post";
+import {SearchWrapper} from "./style";
+import Loading from "../../components/loading";
+
+const PageHelper = React.lazy(() => import('../../components/pagehelper'))
+const Article = React.lazy(() => import('../../components/post'))
 
 class Search extends Component {
 
@@ -13,7 +17,20 @@ class Search extends Component {
                 page: 0,
                 size: 10,
             },
-            posts: []
+            post: {
+                content: [],
+                hasContent: false,   // 是否有内容
+                hasNext: false,     // 是否有下一页
+                hasPrevious: false, // 是否有上一页
+                isEmpty: false,     // 是否为空
+                isFirst: false,      // 是否为首页
+                isLast: false,       // 是否为最后一页
+                page: 0,            // 当前页
+                pages: 1,           // 页总数
+                rpp: 10,            // 每页10条
+                total: 0            // 一条数据
+            },
+            show: false,
         }
     }
 
@@ -27,13 +44,15 @@ class Search extends Component {
     }
 
     searchHandler = () => {
-        console.log(123222)
-        console.log('search: ',this.state.keyword)
         if (this.state.keyword) {
-            console.log(1312312312)
             searchPost(this.state.body, this.state.keyword).then((res) => {
                 console.log(res)
-                this.setState({posts: res.content})
+                const data = {
+                    ...res,
+                    hasContent: true
+                }
+                console.log(data)
+                this.setState({post: data})
             })
         }
     }
@@ -43,18 +62,33 @@ class Search extends Component {
         this.setState({keyword: keyword})
     }
 
+    onKeyDownChange = (e) => {
+        if (e.keyCode === 13) {
+            this.setState({show: true});
+            this.searchHandler();
+        }
+    }
+
     render() {
         return (
-            <div>
-                <input onChange={e => this.inputChangeHandler(e)} value={this.state.keyword} type="text" placeholder="请输入搜索内容"/>
-                <button onClick={this.searchHandler}>搜索</button>
-
+            <SearchWrapper>
+                <input onKeyDown={(e) => this.onKeyDownChange(e)} onChange={e => this.inputChangeHandler(e)}
+                       value={this.state.keyword} type="text" placeholder="请输入搜索内容后回车搜索"/>
                 {
-                    this.state.posts.map(post => (
-                        <Article key={post.id} post={post}/>
-                    ))
+                    this.state.show && (
+                        <Loading data={this.state.post}>
+                            {
+                                this.state.post.content.map(post => (
+                                    <Article key={post.id} post={post}/>
+                                ))
+                            }
+                            {
+                                this.state.post.hasContent && <PageHelper data={this.state.post}/>
+                            }
+                        </Loading>
+                    )
                 }
-            </div>
+            </SearchWrapper>
         );
     }
 }

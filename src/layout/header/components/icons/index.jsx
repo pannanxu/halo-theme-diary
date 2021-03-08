@@ -10,6 +10,7 @@ const Icons = (props) => {
     const [sheets, setSheets] = useState([]);
 
     const getSheet = () => {
+        sheets.length === 0 &&
         getSheets().then(res => {
             setSheets(res.content);
             console.log(res.content);

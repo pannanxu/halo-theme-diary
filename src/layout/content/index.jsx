@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {SectionMainWrapper} from "./style";
+import {LoadingWrapper, SectionMainWrapper} from "./style";
 
 class Content extends Component {
 
@@ -17,11 +17,22 @@ class Content extends Component {
     render() {
         return (
             <SectionMainWrapper>
-                <React.Suspense fallback={<div>加载中...</div>}>
+                <React.Suspense fallback={<Loading />}>
                     {this.state.content}
                 </React.Suspense>
             </SectionMainWrapper>
         );
+    }
+}
+
+class Loading extends Component {
+
+    render() {
+        return (
+            <LoadingWrapper>
+                加载中
+            </LoadingWrapper>
+        )
     }
 }
 

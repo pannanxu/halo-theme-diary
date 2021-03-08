@@ -2,11 +2,11 @@
   font-style: normal;
   font-family: JetBrains-Mono;
   font-display: swap;
-  src: url(/font/JetBrainsMono-1.0.3/web/eot/JetBrainsMono-Regular.eot?);
-  src: url(/font/JetBrainsMono-1.0.3/web/eot/JetBrainsMono-Regular.eot?#iefix) format('embedded-opentype'),
-  url(/font/JetBrainsMono-1.0.3/web/woff/JetBrainsMono-Regular.woff) format('woff'),
-  url(/font/JetBrainsMono-1.0.3/web/woff2/JetBrainsMono-Regular.woff2) format('woff2'),
-  url(/font/JetBrainsMono-1.0.3/ttf/JetBrainsMono-Regular.ttf)  format('truetype');
+  src: url(/src/assets/font/JetBrainsMono-1.0.3/web/eot/JetBrainsMono-Regular.eot?);
+  src: url(/src/assets/font/JetBrainsMono-1.0.3/web/eot/JetBrainsMono-Regular.eot?#iefix) format('embedded-opentype'),
+  url(/src/assets/font/JetBrainsMono-1.0.3/web/woff/JetBrainsMono-Regular.woff) format('woff'),
+  url(/src/assets/font/JetBrainsMono-1.0.3/web/woff2/JetBrainsMono-Regular.woff2) format('woff2'),
+  url(/src/assets/font/JetBrainsMono-1.0.3/ttf/JetBrainsMono-Regular.ttf)  format('truetype');
 }
 html {font-size: 67.5%;}
 
@@ -18,8 +18,8 @@ body {
   color: #c9cacc;
   font-weight: 400;
   font-size: 14px;
+  overflow-y: overlay;
 }
-
 * {
   color: #444;
   padding: 0;

@@ -17,6 +17,9 @@ export const getCategory = _ => {
  * @param slug
  * @returns {*}
  */
-export const getCategoryChildrenPosts = (slug) => {
-    return request({url: `content/categories/${slug}/posts`})
+export const getCategoryChildrenPosts = (slug, params) => {
+    return request({
+        url: `content/categories/${slug}/posts`,
+        params
+    })
 }
