@@ -25,7 +25,8 @@ request.interceptors.response.use(resp => {
         return data;
     }
 
-    alert(message);
-
+    return resp;
+}, error => {
+    return Promise.reject(new Error(error));
 })
 export default request

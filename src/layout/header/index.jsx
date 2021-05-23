@@ -33,8 +33,8 @@ class Header extends Component {
                     </div>
                     <div className="header-info">
                         <div className="header-desc">
-                            <h2><Link to="/">闲人日记</Link></h2>
-                            <p>字节和音符敲打出的交响曲~</p>
+                            <h2><Link to="/">{config.meta.title}</Link></h2>
+                            <p>{config.meta.description}~</p>
                         </div>
                         <Icons display="none"/>
                     </div>

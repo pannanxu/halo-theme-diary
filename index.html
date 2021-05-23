@@ -3,14 +3,14 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="src/favicon.svg" />
+<!--  <link rel="icon" type="image/svg+xml" href="src/favicon.svg" />-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>闲人日记</title>
   <script>
     var config = {
-      meta: {
+      /*meta: {
         title: '闲人日记',
-        description: '一位即将靠打工开启鱼塘的神秘人。',
+        description: '字节和音符敲打出的交响曲~',
       },
       api: {
         // API 地址
@@ -22,7 +22,30 @@
         // LOGO 图片地址
         logoImgUrl: 'http://localhost:3000/themes/diary/logo.png',
       },
-      // 联系方式
+      theme: {
+        name: 'Diary',
+        repo: 'https://github.com/haohanya/halo-theme-diary',
+        version: '0.1'
+      },*/
+      meta: {
+        title: '${blog_title!}',
+        description: '${meta_description!}',
+      },
+      api: {
+        // API 地址
+        baseApiUrl: '${settings.baseApiUrl}',
+        // API 密钥
+        APIAuthorization: '${settings.APIAuthorization}',
+      },
+      home: {
+        // LOGO 图片地址
+        logoImgUrl: '${blog_logo!}',
+      },
+      theme: {
+        name: '${theme.name!}',
+        repo: '${theme.repo!}',
+        version: '${theme.version!}'
+      },
       pages: [
         {
           icon: `<svg t="1615035484912" className="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -43,7 +66,8 @@
           link: '/links',
           title: '友人',
           target: ''//_blank
-        },{
+        }
+        /*{
           icon: `<svg t="1615035622608" className="icon" viewBox="0 0 1024 1024" version="1.1"
                                  xmlns="http://www.w3.org/2000/svg" p-id="32233" width="200" height="200">
                                 <path
@@ -56,7 +80,7 @@
           link: '/file',
           title: '归档',
           target: ''
-        }
+        }*/
         /*, {
           icon: `<svg t="1615032224015" className="icon" viewBox="0 0 1024 1024" version="1.1"
                                  xmlns="http://www.w3.org/2000/svg" p-id="3754" width="200" height="200">

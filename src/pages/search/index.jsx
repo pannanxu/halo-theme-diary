@@ -38,7 +38,8 @@ class Search extends Component {
         const keyword = this.props.match.params.keyword;
         if (keyword) {
             this.setState({keyword: keyword}, () => {
-                this.searchHandler();
+                const method = this.debounce(this.searchHandler, 800);
+                method();
             });
         }
     }
@@ -46,12 +47,10 @@ class Search extends Component {
     searchHandler = () => {
         if (this.state.keyword) {
             searchPost(this.state.body, this.state.keyword).then((res) => {
-                console.log(res)
                 const data = {
                     ...res,
                     hasContent: true
                 }
-                console.log(data)
                 this.setState({post: data})
             })
         }
@@ -69,25 +68,41 @@ class Search extends Component {
         }
     }
 
+    debounce = (method, delay) => {
+        //设置一个检验setTimeout是否在执行的参数，默认未执行
+        let {timer = null} = this.state;
+        //将当前的this赋值给that
+        //否则在下面函数作用域中this是当前函数作用域，没有setState方法
+        let that = this;
+        return function (...args) {
+            //检验是否有正在执行的定时器方法，如果有，就把上一个定时器废弃
+            if (timer) clearTimeout(timer);
+            //生成一个新的定时器方法重新计数
+            timer = setTimeout(function () {
+                method.apply(this, args);
+            }, delay);
+
+            that.setState({timer});
+        };
+    }
+
     render() {
+
+        const {keyword, show, post,} = this.state;
+
         return (
             <SearchWrapper>
-                <input onKeyDown={(e) => this.onKeyDownChange(e)} onChange={e => this.inputChangeHandler(e)}
-                       value={this.state.keyword} type="text" placeholder="请输入搜索内容后回车搜索"/>
-                {
-                    this.state.show && (
-                        <Loading data={this.state.post}>
-                            {
-                                this.state.post.content.map(post => (
-                                    <Article key={post.id} post={post}/>
-                                ))
-                            }
-                            {
-                                this.state.post.hasContent && <PageHelper data={this.state.post}/>
-                            }
-                        </Loading>
-                    )
-                }
+                <input
+                    onKeyDown={(e) => this.onKeyDownChange(e)}
+                    onChange={e => this.inputChangeHandler(e)}
+                    value={keyword} type="text" placeholder="请输入搜索内容后回车搜索"
+                />
+
+                {show && (<Loading data={post}>
+                    {post.content.map(post => <Article key={post.id} post={post}/>)}
+                </Loading>)}
+
+                {post.hasContent && <PageHelper data={post}/>}
             </SearchWrapper>
         );
     }

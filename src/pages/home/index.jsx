@@ -1,4 +1,5 @@
 import React, {memo} from 'react';
+
 import {getPostList} from "../../api/post";
 import {getCategoryChildrenPosts} from "../../api/categorie";
 
@@ -6,9 +7,9 @@ import {HomeWrapper} from "./style";
 
 import Meta from "../../components/meta";
 import Loading from "../../components/loading";
-const PageHelper = React.lazy(() => import('../../components/pagehelper'))
-const Article = React.lazy(() => import('../../components/post'))
-const Category = React.lazy(() => import('./components/category'))
+import PageHelper from '../../components/pagehelper';
+import Article from '../../components/post';
+import Category from './components/category';
 
 class Home extends React.Component {
 
@@ -38,9 +39,8 @@ class Home extends React.Component {
     componentDidMount() {
         const {slug, page} = this.props.match.params;
         this.setState({params: {page: page}}, () => {
-            this.getPostList(slug);
-            // setTimeout(() => this.getPostList(slug), 20000)
-
+            const method = this.debounce(this.getPostList, 800);
+            method(slug);
         })
     }
 
@@ -49,11 +49,11 @@ class Home extends React.Component {
         this.getPostList(slug);
     }
 
-    componentWillUnmount() {
-        this.setState = (state, callback) => {
-            return;
-        }
-    }
+    // componentWillUnmount() {
+    //     this.setState = (state, callback) => {
+    //         return;
+    //     }
+    // }
 
     getPostList = (slug) => {
         if (!slug) {
@@ -68,32 +68,47 @@ class Home extends React.Component {
     getPostByCategory = (slug) => {
         if (slug) {
             getCategoryChildrenPosts(slug, this.state.params).then(res => {
-                this.setState({post: res})
+                this.setState({
+                    ...this.state,
+                    post: {
+                        ...res,
+                        hasContent: true
+                    }
+                })
             });
         }
     }
 
+    debounce = (method, delay) => {
+        //设置一个检验setTimeout是否在执行的参数，默认未执行
+        let {timer = null} = this.state;
+        //将当前的this赋值给that
+        //否则在下面函数作用域中this是当前函数作用域，没有setState方法
+        let that = this;
+        return function (...args) {
+            //检验是否有正在执行的定时器方法，如果有，就把上一个定时器废弃
+            if (timer) clearTimeout(timer);
+            //生成一个新的定时器方法重新计数
+            timer = setTimeout(function () {
+                method.apply(this, args);
+            }, delay);
+
+            that.setState({timer});
+        };
+    }
+
     render() {
 
-        const page = this.state.page || 0;
+        const {page = 0, category, post} = this.state;
 
         return (
             <HomeWrapper>
                 <Meta title={config.meta.title}/>
-                {
-                    this.state.category && <Category {...this.props} page={page} handler={this.getPostByCategory}/>
-                }
-                <Loading data={this.state.post}>
-                    {
-                        this.state.post.content.map(post => (
-                            <Article key={post.id} post={post}/>
-                        ))
-                    }
-                    {
-                        this.state.post.hasContent && <PageHelper data={this.state.post} />
-                    }
+                {category && <Category {...this.props} page={page} handler={this.getPostByCategory}/>}
+                <Loading data={post}>
+                    {post.content.map(post => <Article key={post.id} post={post}/>)}
                 </Loading>
-
+                {post.hasContent && <PageHelper data={post}/>}
             </HomeWrapper>
         )
     }

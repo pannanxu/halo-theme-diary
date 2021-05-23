@@ -56,4 +56,13 @@ export const CommentWrapper = styled.div`
     outline: none;
     font-size: 1.6rem;
   }
+  #submit {
+    cursor: pointer;
+  }
+`
+
+export const CommentListWrapper = styled.div`
+  .comment-reply {
+    cursor: pointer;
+  }
 `

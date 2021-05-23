@@ -4,7 +4,7 @@ import {getPost} from "../../api/post";
 import {PostWrapper} from "./style";
 import Meta from "../../components/meta";
 
-const TransFromMarkDown = React.lazy(() => import('../../components/markdown'))
+import TransFromMarkDown from "../../components/markdown";
 const Comments = React.lazy(() => import('../../components/comment'))
 
 class Post extends Component {
@@ -33,7 +33,7 @@ class Post extends Component {
         return (
             <PostWrapper>
                 <Meta title={content.title}/>
-                <h1>title：{content.title}</h1>
+                <h1>{content.title}</h1>
                 <div>
                     {
                         content.originalContent && <TransFromMarkDown content={content.originalContent}/>
@@ -46,9 +46,11 @@ class Post extends Component {
                         ))
                     }
                 </div>
-                {
-                    content.id && <Comments id={content.id} type='post'/>
-                }
+                <React.Suspense fallback={<div>hello</div>}>
+                    {
+                        content.id && <Comments id={content.id} type='post'/>
+                    }
+                </React.Suspense>
             </PostWrapper>
         );
     }

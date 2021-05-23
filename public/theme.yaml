@@ -3,8 +3,8 @@ name: diary
 author:
   name: 浩瀚
   website: http://mvvm.io
-description:
-logo: https://avatars1.githubusercontent.com/u/1811819?s=460&v=4
-website:
-repo:
-version: 1.1
+description: 字节和音符敲打出的交响曲~
+logo: http://www.mvvm.io/themes/diary/logo.png
+website: http://mvvm.io
+repo: https://github.com/haohanya/halo-theme-diary
+version: 0.1

@@ -9,6 +9,11 @@ const Post = React.lazy(() => import('../pages/post'))
 const Sheet = React.lazy(() => import('../pages/sheet'))
 const Links = React.lazy(() => import('../pages/links'))
 const Search = React.lazy(() => import('../pages/search'))
+// import Home from '../pages/home';
+// import Post from "../pages/post";
+// import Sheet from "../pages/sheet";
+// import Links from "../pages/links";
+// import Search from "../pages/search";
 
 const DiaRouter = () => {
     return (
