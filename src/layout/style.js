@@ -42,7 +42,7 @@ export const PageNavFixedBox = styled.div`
 `
 
 export const PageNavFixedBoxOverlay = styled.div`
-  position: absolute;
+  position: fixed;
   z-index: 98;
   left: 0;
   top: 0;
