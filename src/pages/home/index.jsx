@@ -1,117 +1,73 @@
-import React, {memo} from 'react';
+import React, {memo, useState, useEffect} from 'react'
+import {NavLink} from 'react-router-dom'
 
-import {getPostList} from "../../api/post";
+import {HomeWrapper} from "./style"
+import Meta from "../../components/meta"
+import Article from "../../components/post"
+import {getPostList} from "../../api/post"
+import {PageHelperWrapper, PageNavWrapper} from "../../components/pagehelper/style";
 import {getCategoryChildrenPosts} from "../../api/categorie";
 
-import {HomeWrapper} from "./style";
+const Home = (props) => {
 
-import Meta from "../../components/meta";
-import Loading from "../../components/loading";
-import PageHelper from '../../components/pagehelper';
-import Article from '../../components/post';
-import Category from './components/category';
+    const {location, match} = props
 
-class Home extends React.Component {
+    const [posts, setPosts] = useState({content: [], isFirst: true, isLast: true})
+    const [currentPage, setCurrentPage] = useState(1)
+    const [category, setCategory] = useState('')
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            params: {
-                page: 0
-            },
-            post: {
-                content: [],
-                hasContent: false,   // 是否有内容
-                hasNext: false,     // 是否有下一页
-                hasPrevious: false, // 是否有上一页
-                isEmpty: false,     // 是否为空
-                isFirst: false,      // 是否为首页
-                isLast: false,       // 是否为最后一页
-                page: 0,            // 当前页
-                pages: 1,           // 页总数
-                rpp: 10,            // 每页10条
-                total: 0            // 一条数据
-            },
-            category: []
-        }
-    }
-
-    componentDidMount() {
-        const {slug, page} = this.props.match.params;
-        this.setState({params: {page: page}}, () => {
-            const method = this.debounce(this.getPostList, 800);
-            method(slug);
-        })
-    }
-
-    componentWillReceiveProps(newProps) {
-        const slug = newProps.match.params.slug;
-        this.getPostList(slug);
-    }
-
-    // componentWillUnmount() {
-    //     this.setState = (state, callback) => {
-    //         return;
-    //     }
-    // }
-
-    getPostList = (slug) => {
-        if (!slug) {
-            getPostList(this.state.params).then(res => {
-                this.setState({post: res})
+    useEffect(() => {
+        if (category) {
+            // 按照分类
+            getCategoryChildrenPosts(category, {page: currentPage - 1, size: 10}).then(res => {
+                setPosts(res)
             })
         } else {
-            this.getPostByCategory(slug);
+            getPostList({page: currentPage - 1, size: 10}).then(res => {
+                setPosts(res)
+            })
         }
-    }
+    }, [currentPage, category])
 
-    getPostByCategory = (slug) => {
-        if (slug) {
-            getCategoryChildrenPosts(slug, this.state.params).then(res => {
-                this.setState({
-                    ...this.state,
-                    post: {
-                        ...res,
-                        hasContent: true
-                    }
-                })
-            });
+    useEffect(() => {
+        let {page, slug} = match.params;
+        if (page) {
+            setCurrentPage(parseInt(page))
         }
-    }
+        setCategory(slug)
+    }, [location.pathname])
 
-    debounce = (method, delay) => {
-        //设置一个检验setTimeout是否在执行的参数，默认未执行
-        let {timer = null} = this.state;
-        //将当前的this赋值给that
-        //否则在下面函数作用域中this是当前函数作用域，没有setState方法
-        let that = this;
-        return function (...args) {
-            //检验是否有正在执行的定时器方法，如果有，就把上一个定时器废弃
-            if (timer) clearTimeout(timer);
-            //生成一个新的定时器方法重新计数
-            timer = setTimeout(function () {
-                method.apply(this, args);
-            }, delay);
+    return (
+        <HomeWrapper>
+            <Meta title={config.meta.title}/>
 
-            that.setState({timer});
-        };
-    }
+            {
+                posts.content?.map(post => <Article key={post.id} post={post}/>)
+            }
 
-    render() {
+            <PageHelperWrapper>
+                <PageNavWrapper>
+                    <ul>
+                        {
+                            !posts.isFirst && <li>
+                                <NavLink to={
+                                    category ? `/home/${category}/${currentPage - 1}` : `/home/${(currentPage - 1)}`
+                                }>上一页</NavLink>
+                            </li>
+                        }
+                        {
+                            !posts.isLast && <li>
+                                <NavLink to={
+                                    category ? `/home/${category}/${currentPage + 1}` : `/home/${(currentPage + 1)}`
+                                }>下一页</NavLink>
+                            </li>
+                        }
+                    </ul>
+                </PageNavWrapper>
+            </PageHelperWrapper>
 
-        const {page = 0, category, post} = this.state;
-
-        return (
-            <HomeWrapper>
-                <Meta title={config.meta.title}/>
-                {category && <Category {...this.props} page={page} handler={this.getPostByCategory}/>}
-                <Loading data={post}>
-                    {post.content.map(post => <Article key={post.id} post={post}/>)}
-                </Loading>
-                {post.hasContent && <PageHelper data={post}/>}
-            </HomeWrapper>
-        )
-    }
-}
+        </HomeWrapper>
+    );
+};
 
 export default memo(Home);

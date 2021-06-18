@@ -21,6 +21,11 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(resp => {
 
     const {status, message, data} = resp.data
+
+    if (status === 404) {
+        return Promise.reject(new Error(data));
+    }
+
     if (status === 200) {
         return data;
     }

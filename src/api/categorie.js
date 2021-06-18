@@ -20,6 +20,7 @@ export const getCategory = _ => {
 export const getCategoryChildrenPosts = (slug, params) => {
     return request({
         url: `content/categories/${slug}/posts`,
+        method: 'GET',
         params
     })
 }

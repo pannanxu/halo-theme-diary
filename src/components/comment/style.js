@@ -1,8 +1,10 @@
-import styled from 'styled-components';
+import styled, {createGlobalStyle} from 'styled-components';
 
 export const CommentWrapper = styled.div`
   position: relative;
-  margin: 2rem 0;
+  max-width: 860px;
+  margin: 2rem auto;
+  transition: all 0.3s;
   label {
     position: relative;
     display: block;
@@ -64,5 +66,17 @@ export const CommentWrapper = styled.div`
 export const CommentListWrapper = styled.div`
   .comment-reply {
     cursor: pointer;
+  }
+`
+
+export const CommentReplyWrapper = createGlobalStyle`
+  .comment-reply-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    z-index: 9;
+    width: 100%;
+    background-color: #1d1f21;
+    transform: translateX(-50%);
   }
 `

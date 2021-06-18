@@ -24,16 +24,13 @@ export const getPost = postId => {
 }
 /**
  * 搜索文章
- * @param data
+ * @param params
  * @returns {*}
  */
-export const searchPost = (data, params) => {
+export const searchPost = (params) => {
     return request({
         url: '/content/posts/search',
         method: 'POST',
-        data,
-        params: {
-            'keyword': params
-        }
+        params
     })
 }

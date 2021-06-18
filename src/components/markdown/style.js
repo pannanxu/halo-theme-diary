@@ -102,5 +102,11 @@ export const MarkdownWrapper = styled.div`
       border-right: solid 1px #fff;
     }
   }
+  
+  
+  * {
+      word-break:break-all;
+      word-wrap:break-word;
+  }
 
 `

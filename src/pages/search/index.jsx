@@ -1,111 +1,74 @@
-import React, {Component} from 'react';
+import React, {memo, useState, useEffect} from 'react';
+import {NavLink} from 'react-router-dom'
 
-import {searchPost} from "../../api/post";
 import {SearchWrapper} from "./style";
-import Loading from "../../components/loading";
+import {searchPost} from "../../api/post";
+import Article from "../../components/post";
+import {PageHelperWrapper, PageNavWrapper} from "../../components/pagehelper/style";
+import Meta from "../../components/meta";
+import {PostWrapper} from "../post/style";
 
-const PageHelper = React.lazy(() => import('../../components/pagehelper'))
-const Article = React.lazy(() => import('../../components/post'))
+const Search = (props) => {
 
-class Search extends Component {
+    const {match, location} = props
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            keyword: '',
-            body: {
-                page: 0,
-                size: 10,
-            },
-            post: {
-                content: [],
-                hasContent: false,   // 是否有内容
-                hasNext: false,     // 是否有下一页
-                hasPrevious: false, // 是否有上一页
-                isEmpty: false,     // 是否为空
-                isFirst: false,      // 是否为首页
-                isLast: false,       // 是否为最后一页
-                page: 0,            // 当前页
-                pages: 1,           // 页总数
-                rpp: 10,            // 每页10条
-                total: 0            // 一条数据
-            },
-            show: false,
-        }
-    }
+    const [keyword, setKeyword] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
+    const [posts, setPosts] = useState({isFirst: true, isLast: true})
 
-    componentDidMount() {
-        const keyword = this.props.match.params.keyword;
+    useEffect(() => {
+        const {page = '1', keyword = ''} = match.params
+        setCurrentPage(parseInt(page))
+        setKeyword(keyword)
+    }, [location.pathname])
+
+    useEffect(() => {
+        searchHandler()
+    }, [keyword, currentPage])
+
+    const searchHandler = () => {
         if (keyword) {
-            this.setState({keyword: keyword}, () => {
-                const method = this.debounce(this.searchHandler, 800);
-                method();
-            });
-        }
-    }
-
-    searchHandler = () => {
-        if (this.state.keyword) {
-            searchPost(this.state.body, this.state.keyword).then((res) => {
-                const data = {
-                    ...res,
-                    hasContent: true
-                }
-                this.setState({post: data})
+            searchPost({page: currentPage - 1, size: 10, keyword}).then((res) => {
+                setPosts(res)
+            }).catch((err) => {
+                console.log(err)
             })
         }
     }
 
-    inputChangeHandler = (e) => {
-        const keyword = e.target.value;
-        this.setState({keyword: keyword})
-    }
-
-    onKeyDownChange = (e) => {
+    const onKeyDownChange = (e) => {
         if (e.keyCode === 13) {
-            this.setState({show: true});
-            this.searchHandler();
+            setKeyword(e.target.value)
         }
     }
 
-    debounce = (method, delay) => {
-        //设置一个检验setTimeout是否在执行的参数，默认未执行
-        let {timer = null} = this.state;
-        //将当前的this赋值给that
-        //否则在下面函数作用域中this是当前函数作用域，没有setState方法
-        let that = this;
-        return function (...args) {
-            //检验是否有正在执行的定时器方法，如果有，就把上一个定时器废弃
-            if (timer) clearTimeout(timer);
-            //生成一个新的定时器方法重新计数
-            timer = setTimeout(function () {
-                method.apply(this, args);
-            }, delay);
+    return (
+        <SearchWrapper>
+            <Meta title={keyword ? `搜索内容-${keyword}-${config.meta.title}` : config.meta.title}/>
+            <input
+                onKeyDown={(e) => onKeyDownChange(e)}
+                onChange={e => setKeyword(e.target.value)}
+                value={keyword} type="text" placeholder="请输入搜索内容后回车搜索"
+            />
 
-            that.setState({timer});
-        };
-    }
+            {
+                posts.content?.map((post, index) => <Article key={post.id} post={post}/>)
+            }
 
-    render() {
+            <PageHelperWrapper>
+                <PageNavWrapper>
+                    <ul>
+                        {
+                            !posts.isFirst && <li><NavLink to={`/search/${keyword}/${(currentPage - 1)}`}>上一页</NavLink></li>
+                        }
+                        {
+                            !posts.isLast && <li><NavLink to={`/search/${keyword}/${(currentPage + 1)}`}>下一页</NavLink></li>
+                        }
+                    </ul>
+                </PageNavWrapper>
+            </PageHelperWrapper>
+        </SearchWrapper>
+    );
+};
 
-        const {keyword, show, post,} = this.state;
-
-        return (
-            <SearchWrapper>
-                <input
-                    onKeyDown={(e) => this.onKeyDownChange(e)}
-                    onChange={e => this.inputChangeHandler(e)}
-                    value={keyword} type="text" placeholder="请输入搜索内容后回车搜索"
-                />
-
-                {show && (<Loading data={post}>
-                    {post.content.map(post => <Article key={post.id} post={post}/>)}
-                </Loading>)}
-
-                {post.hasContent && <PageHelper data={post}/>}
-            </SearchWrapper>
-        );
-    }
-}
-
-export default Search;
+export default memo(Search);

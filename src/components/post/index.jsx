@@ -8,7 +8,7 @@ const Article = (props) => {
     const {post} = props
 
     return (
-        <ArticleWrapper id={post.id}>
+        <ArticleWrapper id={post.id} key={post.id}>
             <h2><Link to={'/post/' + post.id}>{post.title}</Link></h2>
             <p>{post.summary}</p>
             <ul>

@@ -1,53 +1,46 @@
-import React, {Component} from 'react';
-import {getSheet} from "../../api/sheet";
+import React, {memo, useState, useEffect} from 'react';
 import {SheetWrapper} from "./style";
-
 import TransFromMarkDown from "../../components/markdown";
-import {PostWrapper} from "../post/style";
+import Comments from "../../components/comment";
+import {getSheet} from "../../api/sheet";
+import Meta from "../../components/meta";
 
-const Comments = React.lazy(() => import('../../components/comment'))
+const Index = (props) => {
 
-class Sheet extends Component {
+    const {location, match} = props
 
-    constructor(props) {
-        super(props);
-        this.state = {}
+    const [sheet, setSheet] = useState({})
+    const [slug, setSlug] = useState('')
+
+    useEffect(() => {
+        setSlug(match.params.slug)
+    }, [location.pathname])
+
+    useEffect(() => {
+        getSheetHandler(slug)
+    }, [slug])
+
+    const getSheetHandler = (slug) => {
+        if (slug) {
+            getSheet(slug).then(res => {
+                setSheet(res)
+            }).catch(err => {
+                console.log(err)
+                setSheet({})
+            })
+        }
     }
 
-    componentDidMount() {
-        const sheetId = this.props.match.params.slug;
-        this.getSheet(sheetId);
-    }
+    return (
+        <SheetWrapper>
+            <Meta title={`${sheet.title}-${config.meta.title}`}/>
+            <h1>{sheet.title}</h1>
+            <TransFromMarkDown content={sheet.originalContent}/>
+            {
+                sheet.id && <Comments id={sheet.id} type='sheet'/>
+            }
+        </SheetWrapper>
+    );
+};
 
-    // 解决同路由传参不同导致无法修改状态，子组件需要手动传递下props
-    componentWillReceiveProps(newProps) {
-        const sheetId = newProps.match.params.slug;
-        this.getSheet(sheetId);
-    }
-
-    getSheet = (sheetId) => {
-        getSheet(sheetId).then(res => {
-            console.log('sheet:', res);
-            this.setState(res)
-        })
-    }
-
-    render() {
-
-        const {title, id, originalContent} = this.state;
-
-        return (
-            <SheetWrapper>
-                <h1>{title}</h1>
-                {id && <TransFromMarkDown content={originalContent}/>}
-                <React.Suspense fallback={<div>hello</div>}>
-                    {
-                        id && <Comments id={id} type='sheet'/>
-                    }
-                </React.Suspense>
-            </SheetWrapper>
-        );
-    }
-}
-
-export default Sheet;
+export default memo(Index);

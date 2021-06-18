@@ -1,52 +1,49 @@
-import React, {Component} from 'react';
+import React, {memo, useState, useEffect} from 'react';
 import {LinkWrapper} from "./style";
-
-import {getLinks} from "../../api/link";
 import Meta from "../../components/meta";
+import {getLinks} from "../../api/link";
 
-class Links extends Component {
+const Index = () => {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            links: []
-        }
-    }
+    const [links, setLinks] = useState([])
 
-    componentDidMount() {
+    useEffect(() => {
         getLinks().then(res => {
-            console.log(res)
-            this.setState({links: res})
+            setLinks(res)
         })
-    }
+    }, [])
 
-    createGroup = (group) => {
+    const createGroup = (links) => {
         return (
-            <div key={group.team}>
-                <h3>{group.team}</h3>
-                {this.createLinks(group.links)}
+            <div key={links.team}>
+                <h3>{links.team}</h3>
+                {createLinks(links.links)}
             </div>
         )
     }
 
-    createLinks = (links) => {
+    const createLinks = (links) => {
         return (
             <ul>
-                {links.map(link => (
-                    <li key={link.id}><a target="_blank" href={link.url}>{link.name}</a> - {link.description}</li>
-                ))}
+                {
+                    links.map(
+                        link => (
+                            <li key={link.id}>
+                                <a target="_blank" href={link.url}>{link.name}</a> - {link.description}
+                            </li>
+                        )
+                    )
+                }
             </ul>
         )
     }
 
-    render() {
-        return (
-            <LinkWrapper>
-                <Meta title={'友人'}/>
-                {this.state.links.map(link => this.createGroup(link))}
-            </LinkWrapper>
-        );
-    }
-}
+    return (
+        <LinkWrapper>
+            <Meta title={'友人'}/>
+            {links.map(link => createGroup(link))}
+        </LinkWrapper>
+    );
+};
 
-export default Links;
+export default memo(Index);

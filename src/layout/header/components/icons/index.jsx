@@ -1,26 +1,14 @@
-import React, {memo, useState} from 'react';
+import React, {memo} from 'react';
 import {Link} from 'react-router-dom'
 import {HeaderIconsWrapper} from "./style";
-import {getSheets} from "../../../../api/sheet";
 
 const Icons = (props) => {
-
-    const {pages} = config;
-
-    const [sheets, setSheets] = useState([]);
-
-    const getSheet = () => {
-        sheets.length === 0 &&
-        getSheets().then(res => {
-            setSheets(res.content);
-            console.log(res.content);
-        })
-    }
 
     return (
         <div>
             <HeaderIconsWrapper {...props} display={props.display}>
                 <ul>
+                    {/* 首页 */}
                     <li>
                         <Link to="/">
                             <svg t="1615032099937" className="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -47,7 +35,7 @@ const Icons = (props) => {
                         </Link>
                     </li>
                     {
-                        pages.map(page => (
+                        config.pages.map(page => (
                             <li key={page.link}>
                                 {
                                     page.target === '_blank' ? (
@@ -63,17 +51,9 @@ const Icons = (props) => {
                             </li>
                         ))
                     }
-                    {
-                        sheets.map(sheet => (
-                            <li key={sheet.slug}>
-                                <Link to={`/sheet/${sheet.slug}`} target={sheet.target}>
-                                    <div dangerouslySetInnerHTML={{__html: sheet.summary}}/>
-                                </Link>
-                            </li>
-                        ))
-                    }
+                    {/* 更多 */}
                     <li>
-                        <div onClick={getSheet}>
+                        <div onClick={() => props.handler()}>
                             <svg t="1615101758268" className="icon" viewBox="0 0 1037 1024" version="1.1"
                                  xmlns="http://www.w3.org/2000/svg" p-id="40842" width="200" height="200">
                                 <path
